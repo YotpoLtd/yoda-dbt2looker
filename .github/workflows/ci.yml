@@ -30,4 +30,9 @@ jobs:
         run: poetry version prepatch
       - name: Poetry Build
         run: poetry build
+      - name: Push Version to git
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Automated Change: Version Updated"
+          file_pattern: pyproject.toml
      
