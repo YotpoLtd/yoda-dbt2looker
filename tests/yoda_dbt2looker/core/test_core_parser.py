@@ -13,7 +13,10 @@ MOCK_MANIFEST = \
              "resource_type": "model",
              "schema": "dev",
              "relation_name": "dev_example_domain_stg__daily_model_a",
-             "tags": ["tag1"],
+             "tags": [],
+             "config": {
+                 "tags": ["tag1"]
+             },
              "unique_id": "model.playground.example_domain_stg__daily_model_a",
              "description": "Loyalty Stores Profile",
              "columns": {
@@ -55,9 +58,10 @@ MOCK_MANIFEST = \
              "relation_name": "dev_example_domain_stg__daily_model_b",
              "resource_type": "model",
              "unique_id": "model.playground.example_domain_stg__daily_model_b",
-             "tags": [
-                 "tag2"
-             ],
+             "tags": [],
+             "config" : {
+                 "tags": ["tag2"]
+             },
              "description": "A starter dbt model",
              "columns": {
                  "id_key": {
