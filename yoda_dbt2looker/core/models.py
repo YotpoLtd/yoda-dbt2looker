@@ -18,6 +18,10 @@ class DbtModelMeta(BaseModel):
     integration_config: Optional[ModelIntegrationConfigMetadata] = None
 
 
+class DbtModelConfig(BaseModel):
+    tags: Optional[List[str]] = None
+
+
 class DbtModel(DbtNode):
     resource_type: Literal["model"]
     relation_name: str
@@ -27,6 +31,7 @@ class DbtModel(DbtNode):
     columns: Dict[str, DbtModelColumn]
     tags: List[str]
     meta: DbtModelMeta
+    config: DbtModelConfig
 
     @validator("columns")
     def case_insensitive_column_names(cls, v: Dict[str, DbtModelColumn]):

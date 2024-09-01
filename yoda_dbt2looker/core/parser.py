@@ -1,7 +1,6 @@
 import logging
 from typing import Optional, List, Dict
 from functools import reduce
-from yoda_dbt2looker.parser import tags_match
 from yoda_dbt2looker.core.models import (
     DbtModel,
     DbtManifest
@@ -53,3 +52,11 @@ def parse_models(raw_manifest: Dict, tag: str = None) -> List[DbtModel]:
     if tag is None:
         return all_models
     return [model for model in all_models if tags_match(tag, model)]
+
+
+def tags_match(query_tag: str, model: DbtModel) -> bool:
+    try:
+        return query_tag in model.config.tags
+    except Exception as e:
+        logging.error(f"Given tag {query_tag} doesn't exist in model config tags , err: {e}")
+        return False
