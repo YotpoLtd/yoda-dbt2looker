@@ -92,7 +92,7 @@ def parse_exposures(raw_manifest: dict, tag=None) -> List[models.DbtExposure]:
 
 def check_models_for_missing_column_types(dbt_typed_models: List[models.DbtModel]):
     for model in dbt_typed_models:
-        if all([col.type is None for col in model.columns.values()]):
+        if all([col.data_type is None for col in model.columns.values()]):
             logging.debug(
                 "Model %s has no typed columns, no dimensions will be generated. %s",
                 model.unique_id,

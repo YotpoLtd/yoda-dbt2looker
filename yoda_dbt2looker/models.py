@@ -198,7 +198,7 @@ class DbtModelColumnMeta(Dbt2LookerMeta):
 class DbtModelColumn(BaseModel):
     name: str
     description: str
-    type: Optional[str]
+    data_type: Optional[str]
     meta: DbtModelColumnMeta
 
 
