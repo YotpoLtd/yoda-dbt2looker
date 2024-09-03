@@ -26,6 +26,8 @@ class TestGenerator:
         mock_dbt_model.relation_name = "test_model"
         mock_dbt_model.columns = {}
         mock_dbt_model.tags = []
+        mock_dbt_model.meta = MagicMock(spec=DbtModelMeta)
+        mock_dbt_model.meta.primary_key = ""
         mock_lkml_dump.return_value = "lookml_content"
 
         result = generator.lookml_view_from_dbt_model(mock_dbt_model, SupportedDbtAdapters.snowflake)
@@ -100,6 +102,8 @@ class TestGenerator:
         mock_column.meta.dimension.description = None
         mock_column.meta.dimension.value_format_name = None
         mock_dbt_model.columns = {"col1": mock_column}
+        mock_dbt_model.meta = MagicMock(spec=DbtModelMeta)
+        mock_dbt_model.meta.primary_key = ""
 
         mock_map_adapter_type_to_looker.return_value = "number"
 
