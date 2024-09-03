@@ -13,7 +13,8 @@ from yoda_dbt2looker.generator import (
     lookml_date_dimension_group,
     looker_date_time_types,
     looker_date_types,
-    looker_scalar_types
+    looker_scalar_types,
+    _generate_compound_primary_key_if_needed
 )
 from yoda_dbt2looker.core.utils import write_list_of_lookml_views
 from yoda_dbt2looker.core.config import config
@@ -75,12 +76,13 @@ def lookml_dimension_groups_from_model(
 
 
 def lookml_dimensions_from_model(model: DbtModel, adapter_type: SupportedDbtAdapters):
-    return [
+    dimensions = [
         {
             'name': column.meta.dimension.name or column.name,
             'type': map_adapter_type_to_looker(adapter_type, column.data_type),
             'sql': column.meta.dimension.sql or f'${{TABLE}}.{column.name}',
             'description': column.meta.dimension.description or column.description,
+            **({"primary_key": "yes"} if model.meta.primary_key == column.name else {}),
             **(
                 {'value_format_name': column.meta.dimension.value_format_name.value}
                 if (column.meta.dimension.value_format_name
@@ -93,3 +95,8 @@ def lookml_dimensions_from_model(model: DbtModel, adapter_type: SupportedDbtAdap
            and map_adapter_type_to_looker(adapter_type, column.data_type)
            in looker_scalar_types
     ]
+    compound_key = _generate_compound_primary_key_if_needed(model)
+    if compound_key:
+        dimensions.append(compound_key)
+
+    return dimensions

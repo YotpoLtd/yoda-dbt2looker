@@ -52,14 +52,6 @@ view: yoda_e2e_platform__dim_stores {
     ]
   }
 
-  dimension_group: in_period {
-    type: duration
-    sql_start: {% dwh_updated_at date_range_filter %} ;;
-    sql_end: {% dwh_updated_at date_range_filter %} ;;
-    description: ""
-    intervals: [day]
-  }
-
   dimension: store_id {
     type: number
     sql: ${TABLE}.store_id ;;
@@ -203,13 +195,5 @@ view: yoda_e2e_platform__dim_stores {
     type: number
     sql: ${TABLE}.loyalty_is_vip_enabled ;;
     description: "TODO: Update Table Description"
-  }
-
-  dimension: period_start {
-    description: ""
-    type: date
-    sql: {% dwh_updated_at date_range_filter %} ;;
-    primary_key: no
-    label: "Start of Period"
   }
 }

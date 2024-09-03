@@ -53,4 +53,10 @@ view: yoda_e2e_loyalty__fact_store_profile_daily {
     sql: ${TABLE}.count_purchases ;;
     description: "TODO: Update Column count_purchases Information"
   }
+
+  dimension: primary_key {
+    primary_key: yes
+    sql: CONCAT(${TABLE}.app_key,${TABLE}.ref_time) ;;
+    description: "auto generated compound key from the columns:app_key, ref_time"
+  }
 }

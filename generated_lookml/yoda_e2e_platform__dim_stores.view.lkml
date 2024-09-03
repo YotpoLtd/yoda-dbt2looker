@@ -56,6 +56,7 @@ view: yoda_e2e_platform__dim_stores {
     type: number
     sql: ${TABLE}.store_id ;;
     description: "TODO: Update Table Description"
+    primary_key: yes
   }
 
   dimension: organization_id {
