@@ -5,13 +5,14 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
-from pydantic import BaseModel, Field, PydanticValueError, validator
+from pydantic import BaseModel, Field, validator
 
 
 # dbt2looker utility types
-class UnsupportedDbtAdapterError(PydanticValueError):
-    code = "unsupported_dbt_adapter"
-    msg_template = "{wrong_value} is not a supported dbt adapter"
+class UnsupportedDbtAdapterError(ValueError):
+    def __init__(self, value: any):
+        self.value = value
+        super().__init__(f"unsupported dbt adapter: {value} is not a supported dbt adapter")
 
 
 class SupportedDbtAdapters(str, Enum):
@@ -357,7 +358,7 @@ class DbtManifestMetadata(BaseModel):
         try:
             SupportedDbtAdapters(v)
         except ValueError:
-            raise UnsupportedDbtAdapterError(wrong_value=v)
+            raise UnsupportedDbtAdapterError(value=v)
         return v
 
 
