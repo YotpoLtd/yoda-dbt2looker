@@ -153,10 +153,10 @@ class Dbt2LookerMeasure(BaseModel):
 
 class Dbt2LookerDimension(BaseModel):
     enabled: Optional[bool] = True
-    name: Optional[str]
-    sql: Optional[str]
-    description: Optional[str]
-    value_format_name: Optional[LookerValueFormatName]
+    name: Optional[str] = None
+    sql: Optional[str] = None
+    description: Optional[str] = None
+    value_format_name: Optional[LookerValueFormatName] = None
 
 
 class Dbt2InnerLookerMeta(BaseModel):
