@@ -5,7 +5,7 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
-from pydantic import BaseModel, Field, validator, root_validator, ValidationError
+from pydantic import BaseModel, Field, field_validator, model_validator, ValidationError
 
 # dbt2looker utility types
 class UnsupportedDbtAdapterError(ValueError):
@@ -139,7 +139,7 @@ class Dbt2LookerMeasure(BaseModel):
     value_format_name: Optional[LookerValueFormatName] = None
     label: Optional[str] = None
 
-    @validator("filters")
+    @field_validator("filters")
     def filters_are_singular_dicts(cls, v: List[Dict[str, str]]):
         if v is not None:
             for f in v:
@@ -326,7 +326,7 @@ class DbtModel(DbtNode):
     model_labels: Optional[Dbt2LookerModelLabels] = []
 
 
-    @validator("columns")
+    @field_validator("columns")
     def case_insensitive_column_names(cls, v: Dict[str, DbtModelColumn]):
         return {
             name.lower(): column.copy(update={"name": column.name.lower()})
@@ -353,7 +353,7 @@ class DbtExposure(DbtNode):
 class DbtManifestMetadata(BaseModel):
     adapter_type: str
 
-    @validator("adapter_type")
+    @field_validator("adapter_type")
     def adapter_must_be_supported(cls, v):
         try:
             SupportedDbtAdapters(v)
@@ -370,7 +370,7 @@ class DbtManifest(BaseModel):
     exposures: Dict[str, Any]
     metadata: DbtManifestMetadata
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def validate_nodes_and_exposures(cls, values):
         nodes = values.get('nodes', {})
         exposures = values.get('exposures', {})
