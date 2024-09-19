@@ -1,17 +1,17 @@
 from enum import Enum
-from typing import Union, Dict, List, Optional
+from typing import Union, Dict, List, Optional, Any
 
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
-from pydantic import BaseModel, Field, PydanticValueError, validator
-
+from pydantic import BaseModel, Field, validator, root_validator, ValidationError
 
 # dbt2looker utility types
-class UnsupportedDbtAdapterError(PydanticValueError):
-    code = "unsupported_dbt_adapter"
-    msg_template = "{wrong_value} is not a supported dbt adapter"
+class UnsupportedDbtAdapterError(ValueError):
+    def __init__(self, value: any):
+        self.value = value
+        super().__init__(f"unsupported dbt adapter: {value} is not a supported dbt adapter")
 
 
 class SupportedDbtAdapters(str, Enum):
@@ -134,9 +134,9 @@ class LookerValueFormatName(str, Enum):
 class Dbt2LookerMeasure(BaseModel):
     type: LookerAggregateMeasures
     filters: Optional[List[Dict[str, str]]] = []
-    description: Optional[str]
-    sql: Optional[str]
-    value_format_name: Optional[LookerValueFormatName]
+    description: Optional[str] = None
+    sql: Optional[str] = None
+    value_format_name: Optional[LookerValueFormatName] = None
     label: Optional[str] = None
 
     @validator("filters")
@@ -152,10 +152,10 @@ class Dbt2LookerMeasure(BaseModel):
 
 class Dbt2LookerDimension(BaseModel):
     enabled: Optional[bool] = True
-    name: Optional[str]
-    sql: Optional[str]
-    description: Optional[str]
-    value_format_name: Optional[LookerValueFormatName]
+    name: Optional[str] = None
+    sql: Optional[str] = None
+    description: Optional[str] = None
+    value_format_name: Optional[LookerValueFormatName] = None
 
 
 class Dbt2InnerLookerMeta(BaseModel):
@@ -280,11 +280,11 @@ class Dbt2MetaLookerModelMeta(BaseModel):
     dimension_groups: Optional[List[Dbt2LookerExploreDimensionGroupDuration]] = []
     parameters: Optional[List[Dbt2LookerExploreParameter]] = []
     filters: Optional[List[Dbt2LookerExploreFilter]] = []
-    model_labels: Optional[List[Dbt2LookerModelLabels]]
+    model_labels: Optional[List[Dbt2LookerModelLabels]] = []
 
 
 class Dbt2LookerModelMeta(BaseModel):
-    looker: Optional[Dbt2MetaLookerModelMeta]
+    looker: Optional[Dbt2MetaLookerModelMeta] = None
     joins: Optional[List[Dbt2LookerExploreJoin]] = []
 
 
@@ -323,7 +323,8 @@ class DbtModel(DbtNode):
     ] = []
     parameters_exposure: Optional[List[Dbt2LookerExploreParameter]] = []
     filters_exposure: Optional[List[Dbt2LookerExploreFilter]] = []
-    model_labels: Optional[Dbt2LookerModelLabels]
+    model_labels: Optional[Dbt2LookerModelLabels] = []
+
 
     @validator("columns")
     def case_insensitive_column_names(cls, v: Dict[str, DbtModelColumn]):
@@ -357,11 +358,41 @@ class DbtManifestMetadata(BaseModel):
         try:
             SupportedDbtAdapters(v)
         except ValueError:
-            raise UnsupportedDbtAdapterError(wrong_value=v)
+            raise UnsupportedDbtAdapterError(value=v)
         return v
 
 
 class DbtManifest(BaseModel):
-    nodes: Dict[str, Union[DbtModel, DbtNode]]
-    exposures: Dict[str, Union[DbtExposure, DbtNode]]
+    # TODO: check why Union doesn't work
+    # nodes: Dict[str, Union[DbtModel, DbtNode]]
+    # exposures: Dict[str, Union[DbtExposure, DbtNode]]
+    nodes: Dict[str, Any]
+    exposures: Dict[str, Any]
     metadata: DbtManifestMetadata
+
+    @root_validator(pre=True)
+    def validate_nodes_and_exposures(cls, values):
+        nodes = values.get('nodes', {})
+        exposures = values.get('exposures', {})
+
+        # Validate 'nodes' field
+        validated_nodes = {}
+        for key, value in nodes.items():
+            try:
+                validated_nodes[key] = DbtModel(**value)
+            except ValidationError as e:
+                if "model.yoda.yoda_e2e_loyalty__fact_store_profile_daily" == key:
+                    print(f"failed to parse {key} , errors: {e.errors()}")
+                validated_nodes[key] = DbtNode(**value)
+
+        # Validate 'exposures' field
+        validated_exposures = {}
+        for key, value in exposures.items():
+            try:
+                validated_exposures[key] = DbtExposure(**value)
+            except ValidationError:
+                validated_exposures[key] = DbtNode(**value)
+
+        values['nodes'] = validated_nodes
+        values['exposures'] = validated_exposures
+        return values

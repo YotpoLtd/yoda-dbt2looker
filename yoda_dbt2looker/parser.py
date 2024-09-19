@@ -4,7 +4,6 @@ import jsonschema
 import importlib.resources
 from typing import Dict, Optional, List, Union
 from functools import reduce
-
 from pydantic.main import BaseModel
 
 from .generator import _extract_all_refs
@@ -55,7 +54,7 @@ def tags_match(query_tag: str, model: models.DbtModel) -> bool:
 def parse_models(raw_manifest: dict, tag=None) -> List[models.DbtModel]:
     manifest = models.DbtManifest(**raw_manifest)
     all_models: List[models.DbtModel] = [
-        node for node in manifest.nodes.values() if node.resource_type == "model"
+        node for node in manifest.nodes.values() if node.resource_type == "model" and node.unique_id.startswith("model.yoda")
     ]
 
     # Empty model files have many missing parameters
