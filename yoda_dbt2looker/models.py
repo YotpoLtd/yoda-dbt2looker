@@ -381,8 +381,6 @@ class DbtManifest(BaseModel):
             try:
                 validated_nodes[key] = DbtModel(**value)
             except ValidationError as e:
-                if "model.yoda.yoda_e2e_loyalty__fact_store_profile_daily" == key:
-                    print(f"failed to parse {key} , errors: {e.errors()}")
                 validated_nodes[key] = DbtNode(**value)
 
         # Validate 'exposures' field
