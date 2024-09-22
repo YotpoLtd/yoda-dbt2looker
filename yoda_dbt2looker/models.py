@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union, Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any
 
 try:
     from typing import Literal
@@ -363,9 +363,6 @@ class DbtManifestMetadata(BaseModel):
 
 
 class DbtManifest(BaseModel):
-    # TODO: check why Union doesn't work
-    # nodes: Dict[str, Union[DbtModel, DbtNode]]
-    # exposures: Dict[str, Union[DbtExposure, DbtNode]]
     nodes: Dict[str, Any]
     exposures: Dict[str, Any]
     metadata: DbtManifestMetadata

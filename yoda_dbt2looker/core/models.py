@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Any
 
 try:
     from typing import Literal
@@ -43,7 +43,6 @@ class DbtModel(DbtNode):
 
 
 class DbtManifest(BaseModel):
-    # TODO: check why Union doesn't work
     nodes: Dict[str, Any]
     metadata: DbtManifestMetadata
 
