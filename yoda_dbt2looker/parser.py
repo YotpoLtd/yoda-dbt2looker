@@ -4,7 +4,6 @@ import jsonschema
 import importlib.resources
 from typing import Dict, Optional, List, Union
 from functools import reduce
-
 from pydantic.main import BaseModel
 
 from .generator import _extract_all_refs

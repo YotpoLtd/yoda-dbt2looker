@@ -1,10 +1,10 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Any
 
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
-from pydantic import Field, validator, BaseModel
+from pydantic import Field, field_validator, BaseModel, ValidationError, model_validator
 
 from yoda_dbt2looker.models import (
     DbtNode,
@@ -34,7 +34,7 @@ class DbtModel(DbtNode):
     meta: DbtModelMeta
     config: DbtModelConfig
 
-    @validator("columns")
+    @field_validator("columns")
     def case_insensitive_column_names(cls, v: Dict[str, DbtModelColumn]):
         return {
             name.lower(): column.copy(update={"name": column.name.lower()})
@@ -43,5 +43,18 @@ class DbtModel(DbtNode):
 
 
 class DbtManifest(BaseModel):
-    nodes: Dict[str, Union[DbtModel, DbtNode]]
+    nodes: Dict[str, Any]
     metadata: DbtManifestMetadata
+
+    @model_validator(mode="before")
+    def validate_nodes_and_exposures(cls, values):
+        nodes = values.get('nodes', {})
+        # Validate 'nodes' field
+        validated_nodes = {}
+        for key, value in nodes.items():
+            try:
+                validated_nodes[key] = DbtModel(**value)
+            except ValidationError as e:
+                validated_nodes[key] = DbtNode(**value)
+        values['nodes'] = validated_nodes
+        return values
