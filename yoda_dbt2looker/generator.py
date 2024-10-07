@@ -175,6 +175,24 @@ LOOKER_DTYPE_MAP = {
         "timestamp": "timestamp",
         "date": "datetime",
     },
+    "databricks": {
+        "byte": "number",
+        "short": "number",
+        "integer": "number",
+        "int": "number",
+        "bigint": "number",
+        "smallint": "number",
+        "long": "number",
+        "float": "number",
+        "double": "number",
+        "decimal": "number",
+        "string": "string",
+        "varchar": "string",
+        "char": "string",
+        "boolean": "yesno",
+        "timestamp": "timestamp",
+        "date": "datetime",
+    },
 }
 
 looker_date_time_types = ["datetime", "timestamp"]
@@ -203,7 +221,9 @@ def map_adapter_type_to_looker(
         return None
     normalised_column_type = (
         normalise_spark_types(column_type)
-        if adapter_type == models.SupportedDbtAdapters.spark.value
+        if adapter_type in
+        [models.SupportedDbtAdapters.spark.value,
+         models.SupportedDbtAdapters.databricks.value]
         else column_type
     )
     looker_type = LOOKER_DTYPE_MAP[adapter_type].get(normalised_column_type)
