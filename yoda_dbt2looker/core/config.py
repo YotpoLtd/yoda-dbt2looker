@@ -10,6 +10,7 @@ class Config:
     MANIFEST_FILENAME: str = 'manifest.json'
     DBT_PROJECT_FILENAME: str = 'dbt_project.yml'
     YODA_SNOWFLAKE_TAG: str = 'yoda_snowflake'
+    YODA_SNOWFLAKE_AS_ICEBERG_TAG: str = 'yoda_snowflake_as_iceberg'
 
 
 config = Config()
