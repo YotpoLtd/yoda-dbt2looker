@@ -26,7 +26,7 @@ def generate_lookml_views(dbt_models: List[DbtModel], adapter_type: str, output_
 
 
 def lookml_view_from_dbt_model(model: DbtModel, adapter_type: SupportedDbtAdapters) -> LookViewFile:
-    view_name = model.name if not model.meta.migrated_from_model else model.meta.migrated_from_model
+    view_name = model.meta.migrated_from_model or model.name
     lookml = {
         "view": {
             "name": view_name,
