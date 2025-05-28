@@ -58,6 +58,23 @@ class TestGenerator:
         result = generator.get_model_relation_name(mock_dbt_model)
         assert result == "test_schema.test_table"
 
+        mock_dbt_model = MagicMock(spec=DbtModel)
+        mock_dbt_model.tags = [config.YODA_SNOWFLAKE_AS_ICEBERG_TAG]
+        mock_dbt_model.meta = mock_meta
+
+        result = generator.get_model_relation_name(mock_dbt_model)
+        assert result == "test_schema.test_table"
+
+        mock_dbt_model = MagicMock(spec=DbtModel)
+        mock_dbt_model.tags = []
+        mock_dbt_model.relation_name = "relation_name"
+
+        result = generator.get_model_relation_name(mock_dbt_model)
+        assert result == "relation_name"
+
+
+
+
     def test_get_model_relation_name_without_tag(self):
         mock_dbt_model = MagicMock(spec=DbtModel)
         mock_dbt_model.tags = []
