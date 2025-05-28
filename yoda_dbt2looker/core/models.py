@@ -17,6 +17,7 @@ from yoda_dbt2looker.models import (
 class DbtModelMeta(BaseModel):
     primary_key: Optional[str] = Field(None, alias="primary-key")
     integration_config: Optional[ModelIntegrationConfigMetadata] = None
+    migrated_from_model: Optional[str] = Field(None, alias="migrated-from-model")
 
 
 class DbtModelConfig(BaseModel):
