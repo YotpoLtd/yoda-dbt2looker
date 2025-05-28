@@ -20,13 +20,14 @@ class TestGenerator:
         mock_write_list_of_lookml_views.assert_called_once_with([mock_lookml_view], "output/dir")
 
     @patch('yoda_dbt2looker.core.generator.lkml.dump')
-    def test_lookml_view_from_dbt_model(self, mock_lkml_dump):
+    def test_lookml_view_from_dbt_model_without_migrated_from_model(self, mock_lkml_dump):
         mock_dbt_model = MagicMock(spec=DbtModel)
         mock_dbt_model.name = "test_model"
         mock_dbt_model.relation_name = "test_model"
         mock_dbt_model.columns = {}
         mock_dbt_model.tags = []
         mock_dbt_model.meta = MagicMock(spec=DbtModelMeta)
+        mock_dbt_model.meta.migrated_from_model = None
         mock_dbt_model.meta.primary_key = ""
         mock_lkml_dump.return_value = "lookml_content"
 
@@ -35,7 +36,28 @@ class TestGenerator:
         assert isinstance(result, LookViewFile)
         assert result.filename == "test_model.view.lkml"
         assert result.contents == "lookml_content"
-        mock_lkml_dump.assert_called_once()
+        mock_lkml_dump.assert_called_once_with({'view': {'name': 'test_model', 'sql_table_name': 'test_model', 'dimension_groups': [], 'dimensions': [], 'measures': []}})
+    
+    @patch('yoda_dbt2looker.core.generator.lkml.dump')
+    def test_lookml_view_from_dbt_model_with_migrated_from_model(self, mock_lkml_dump):
+        mock_dbt_model = MagicMock(spec=DbtModel)
+        mock_dbt_model.name = "test_model"
+        mock_dbt_model.relation_name = "test_model"
+        mock_dbt_model.columns = {}
+        mock_dbt_model.tags = []
+        mock_dbt_model.meta = MagicMock(spec=DbtModelMeta)
+        mock_dbt_model.meta.migrated_from_model = "migrated_model"
+        mock_dbt_model.meta.primary_key = ""
+        mock_lkml_dump.return_value = "lookml_content"
+
+        result = generator.lookml_view_from_dbt_model(mock_dbt_model, SupportedDbtAdapters.snowflake)
+
+        assert isinstance(result, LookViewFile)
+        assert result.filename == "migrated_model.view.lkml"
+        assert result.contents == "lookml_content"
+        mock_lkml_dump.assert_called_once_with({'view': {'name': 'migrated_model', 'sql_table_name': 'test_model', 'dimension_groups': [], 'dimensions': [], 'measures': []}})
+
+        
 
     def test_get_model_relation_name_with_tag(self):
         mock_snowflake_properties = MagicMock()

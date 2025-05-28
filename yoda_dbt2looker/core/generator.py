@@ -26,9 +26,10 @@ def generate_lookml_views(dbt_models: List[DbtModel], adapter_type: str, output_
 
 
 def lookml_view_from_dbt_model(model: DbtModel, adapter_type: SupportedDbtAdapters) -> LookViewFile:
+    view_name = model.name if not model.meta.migrated_from_model else model.meta.migrated_from_model
     lookml = {
         "view": {
-            "name": model.name,
+            "name": view_name,
             "sql_table_name": get_model_relation_name(model),
             "dimension_groups": lookml_dimension_groups_from_model(model, adapter_type),
             "dimensions": lookml_dimensions_from_model(model, adapter_type),
@@ -37,7 +38,8 @@ def lookml_view_from_dbt_model(model: DbtModel, adapter_type: SupportedDbtAdapte
         }
     }
     logging.debug(
-        f"Created view from model %s with %d dimensions",
+        f"Created view %s from model %s with %d dimensions",
+        view_name,
         model.name,
         len(lookml["view"]["dimensions"]),
     )
@@ -46,7 +48,7 @@ def lookml_view_from_dbt_model(model: DbtModel, adapter_type: SupportedDbtAdapte
     except Exception as e:
         logging.error(f"Error dumping lookml for model {model.name}")
         raise e
-    return LookViewFile(filename=f"{model.name}.view.lkml", contents=contents)
+    return LookViewFile(filename=f"{view_name}.view.lkml", contents=contents)
 
 
 def get_model_relation_name(model: DbtModel):
