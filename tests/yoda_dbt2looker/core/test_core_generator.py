@@ -63,6 +63,7 @@ class TestGenerator:
         mock_snowflake_properties = MagicMock()
         mock_snowflake_properties.sf_schema = "test_schema"
         mock_snowflake_properties.table = "test_table"
+        mock_snowflake_properties.SF_TABLE_NAME = "test_table_sf"
 
         mock_snowflake_integration = MagicMock()
         mock_snowflake_integration.properties = mock_snowflake_properties
@@ -85,7 +86,7 @@ class TestGenerator:
         mock_dbt_model.meta = mock_meta
 
         result = generator.get_model_relation_name(mock_dbt_model)
-        assert result == "test_schema.test_table"
+        assert result == "test_schema.test_table_sf"
 
         mock_dbt_model = MagicMock(spec=DbtModel)
         mock_dbt_model.tags = []
