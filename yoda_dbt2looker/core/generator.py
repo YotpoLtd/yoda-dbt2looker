@@ -52,8 +52,10 @@ def lookml_view_from_dbt_model(model: DbtModel, adapter_type: SupportedDbtAdapte
 
 
 def get_model_relation_name(model: DbtModel):
-    if config.YODA_SNOWFLAKE_TAG in model.tags or config.YODA_SNOWFLAKE_AS_ICEBERG_TAG in model.tags:
+    if config.YODA_SNOWFLAKE_TAG in model.tags :
         return f"{model.meta.integration_config.snowflake.properties.sf_schema}.{model.meta.integration_config.snowflake.properties.table}"
+    if config.YODA_SNOWFLAKE_AS_ICEBERG_TAG in model.tags:
+        return f"{model.meta.integration_config.snowflake.properties.sf_schema}.{model.meta.integration_config.snowflake.properties.SF_TABLE_NAME}"
     return model.relation_name
 
 
