@@ -83,6 +83,7 @@ class TestGenerator:
 
         mock_dbt_model = MagicMock(spec=DbtModel)
         mock_dbt_model.tags = [config.YODA_SNOWFLAKE_AS_ICEBERG_TAG]
+        mock_integration_config.snowflake_as_iceberg = mock_snowflake_integration
         mock_dbt_model.meta = mock_meta
 
         result = generator.get_model_relation_name(mock_dbt_model)

@@ -55,7 +55,7 @@ def get_model_relation_name(model: DbtModel):
     if config.YODA_SNOWFLAKE_TAG in model.tags :
         return f"{model.meta.integration_config.snowflake.properties.sf_schema}.{model.meta.integration_config.snowflake.properties.table}"
     if config.YODA_SNOWFLAKE_AS_ICEBERG_TAG in model.tags:
-        return f"{model.meta.integration_config.snowflake.properties.sf_schema}.{model.meta.integration_config.snowflake.properties.SF_TABLE_NAME}"
+        return f"{model.meta.integration_config.snowflake_as_iceberg.properties.sf_schema}.{model.meta.integration_config.snowflake_as_iceberg.properties.SF_TABLE_NAME}"
     return model.relation_name
 
 
