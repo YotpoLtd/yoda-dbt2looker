@@ -293,7 +293,6 @@ class Dbt2LookerModelMeta(BaseModel):
 class SnowflakeProperties(BaseModel):
     table: str
     sf_schema: str = Field(None, alias="schema")
-    SF_TABLE_NAME: str = Field(None, alias="SF_TABLE_NAME")
 
 
 class SnowflakeConfiguration(BaseModel):
