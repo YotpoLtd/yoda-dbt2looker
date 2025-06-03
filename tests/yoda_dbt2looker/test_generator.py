@@ -454,6 +454,11 @@ def test__get_model_relation_name():
     model.meta.integration_config.snowflake.properties.sf_schema = "schema1"
     model.meta.integration_config.snowflake.properties.table = "table2"
     assert generator._get_model_relation_name(model) == "schema1.table2"
+    model.tags = ["yoda_snowflake_as_iceberg"]
+    model.meta.integration_config.snowflake_as_iceberg.properties.sf_schema = "schema1"
+    model.meta.integration_config.snowflake_as_iceberg.properties.table = "table2"
+    assert generator._get_model_relation_name(model) == "schema1.table2"
+    
 
 
 def test_lookml_calculated_dimension():

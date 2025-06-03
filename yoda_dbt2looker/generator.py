@@ -558,6 +558,9 @@ def _generate_view_label_if_needed(model: models.DbtModel, lookml):
 def _get_model_relation_name(model: models.DbtModel):
     if "yoda_snowflake" in model.tags:
         return f"{model.meta.integration_config.snowflake.properties.sf_schema}.{model.meta.integration_config.snowflake.properties.table}"
+    if 'yoda_snowflake_as_iceberg' in model.tags:
+        return f"{model.meta.integration_config.snowflake_as_iceberg.properties.sf_schema}.{model.meta.integration_config.snowflake_as_iceberg.properties.table}"
+
     return model.relation_name
 
 
