@@ -4,8 +4,6 @@ from pathlib import Path
 from typing import Optional
 import lkml
 
-from yoda_dbt2looker.core.generator import get_model_relation_name
-
 from . import models
 
 LOOKER_DTYPE_MAP = {
@@ -517,7 +515,7 @@ def lookml_view_from_dbt_model(
     lookml = {
         "view": {
             "name": model.name,
-            "sql_table_name": get_model_relation_name(model),
+            "sql_table_name": _get_model_relation_name(model),
             "dimension_groups": lookml_dimension_groups_from_model(model, adapter_type),
             "dimensions": lookml_dimensions_from_model(model, adapter_type),
             "measures": lookml_measures_from_model(model),
@@ -555,6 +553,15 @@ def lookml_view_from_dbt_model(
 def _generate_view_label_if_needed(model: models.DbtModel, lookml):
     if model.model_labels and model.model_labels.model_label:
         lookml["view"]["label"] = model.model_labels.model_label
+
+
+def _get_model_relation_name(model: models.DbtModel):
+    if "yoda_snowflake" in model.tags:
+        return f"{model.meta.integration_config.snowflake.properties.sf_schema}.{model.meta.integration_config.snowflake.properties.table}"
+    if 'yoda_snowflake_as_iceberg' in model.tags:
+        return f"{model.meta.integration_config.snowflake_as_iceberg.properties.sf_schema}.{model.meta.integration_config.snowflake_as_iceberg.properties.table}"
+
+    return model.relation_name
 
 
 def lookml_view_from_dbt_exposure(model: models.DbtModel, dbt_project_name: str):
