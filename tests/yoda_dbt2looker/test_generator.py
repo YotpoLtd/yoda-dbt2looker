@@ -445,17 +445,6 @@ def test_lookml_exposure_measure():
         "label": "measure1",
     }
 
-
-def test__get_model_relation_name():
-    model = MagicMock()
-    model.relation_name = "table1"
-    assert generator._get_model_relation_name(model) == "table1"
-    model.tags = ["yoda_snowflake"]
-    model.meta.integration_config.snowflake.properties.sf_schema = "schema1"
-    model.meta.integration_config.snowflake.properties.table = "table2"
-    assert generator._get_model_relation_name(model) == "schema1.table2"
-
-
 def test_lookml_calculated_dimension():
     dimension1 = models.Dbt2LookerExploreDimension(
         name="custom_dimension_1",
