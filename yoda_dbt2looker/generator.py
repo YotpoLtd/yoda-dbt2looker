@@ -174,6 +174,7 @@ LOOKER_DTYPE_MAP = {
         "boolean": "yesno",
         "timestamp": "timestamp",
         "date": "datetime",
+        "timestamp_ntz": "timestamp",
     },
     "databricks": {
         "byte": "number",
@@ -192,6 +193,7 @@ LOOKER_DTYPE_MAP = {
         "boolean": "yesno",
         "timestamp": "timestamp",
         "date": "datetime",
+        "timestamp_ntz": "timestamp",
     },
 }
 
