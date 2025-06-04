@@ -677,3 +677,18 @@ def test__generate_view_label_if_needed():
     model.model_labels.model_label = "label1"
     generator._generate_view_label_if_needed(model, lookml)
     assert lookml == {"view": {"label": "label1"}}
+
+def test_map_adapter_type_to_looker_timestamp_ntz():
+    # Test spark adapter timestamp_ntz conversion
+    looker_type = generator.map_adapter_type_to_looker(
+        models.SupportedDbtAdapters.spark.value, 
+        "timestamp_ntz"
+    )
+    assert looker_type == "timestamp"
+
+    # Test databricks adapter timestamp_ntz conversion  
+    looker_type = generator.map_adapter_type_to_looker(
+        models.SupportedDbtAdapters.databricks.value,
+        "timestamp_ntz"
+    )
+    assert looker_type == "timestamp"
